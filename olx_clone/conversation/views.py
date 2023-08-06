@@ -51,21 +51,18 @@ def inbox(request):
     }
     return render(request, 'conversation/inbox.html', context)
 
-
 @login_required
 def detail_conversation(request, pk):
-    conversation = Conversation.objects.filter(members__in=[request.user.id]).get(pk=pk)
+    conversation = get_object_or_404(Conversation, pk=pk, members=request.user)
 
     if request.method == 'POST':
         form = ConversationMessageForm(request.POST)
 
         if form.is_valid():
             conversation_message = form.save(commit=False)
-            conversation_message.coversation = conversation
+            conversation_message.conversation = conversation
             conversation_message.created_by = request.user
             conversation_message.save()
-
-            conversation.save()
 
             return redirect('conversation:detail_conversation', pk=pk)
     
@@ -76,6 +73,5 @@ def detail_conversation(request, pk):
         'conversation': conversation,
         'form': form,
     }
-
 
     return render(request, 'conversation/detail_conversation.html', context)

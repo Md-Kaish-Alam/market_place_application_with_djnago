@@ -27,7 +27,7 @@ def signup(request):
         if form.is_valid():
             form.save()
 
-            return HttpResponse("success")
+            return redirect('core:login')
     else:
         form = SignupForm()
         
